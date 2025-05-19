@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+		width="120"
+		height="65"
+		viewBox="0 0 166.66666 48.75"
+		version="1.1"
+		id="svg1"
+		xml:space="preserve"
+		inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+		sodipodi:docname="main-logo.svg"
+		xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+		xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+		xmlns="http://www.w3.org/2000/svg"
+		xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+		  id="namedview1"
+		  pagecolor="#ffffff"
+		  bordercolor="#000000"
+		  borderopacity="0.25"
+		  inkscape:showpageshadow="false"
+		  inkscape:pageopacity="0.0"
+		  inkscape:pagecheckerboard="0"
+		  inkscape:deskcolor="#d1d1d1"
+		  inkscape:document-units="px"
+		  showborder="false"
+		  inkscape:zoom="2.2416667"
+		  inkscape:cx="84.089218"
+		  inkscape:cy="133.60595"
+		  inkscape:window-width="1920"
+		  inkscape:window-height="1009"
+		  inkscape:window-x="-8"
+		  inkscape:window-y="-8"
+		  inkscape:window-maximized="1"
+		  inkscape:current-layer="g3"
+		  showgrid="false" />
+	<defs
+			id="defs1">
+    <rect
+			x="22.431145"
+			y="443.01511"
+			width="762.65894"
+			height="134.58687"
+			id="rect6" />
+		<rect
+				x="667.32654"
+				y="277.58542"
+				width="120.5674"
+				height="243.93871"
+				id="rect3" />
+		<rect
+				x="2.8038931"
+				y="283.19321"
+				width="342.07495"
+				height="266.36984"
+				id="rect2" />
+  </defs>
+	<g
+			inkscape:label="Слой 1"
+			inkscape:groupmode="layer"
+			id="layer1">
+    <g
+			id="g3"
+			transform="matrix(0.33267536,0,0,0.33736012,-3.6065032,-64.801124)">
+      <g
+			  id="g2"
+			  transform="matrix(0.4775608,0,0,0.36429433,196.48372,137.73263)"
+			  style="fill:#000000">
+        <polygon
+				class="st0"
+				points="129.448,305.998 94.072,512 195.854,471.899 248.285,166.553 148.147,206.01 183.514,0 81.732,40.092 29.301,345.446 "
+				id="polygon1"
+				style="fill:#000000" />
+		  <polygon
+				  class="st0"
+				  points="263.715,345.446 363.854,305.998 328.486,512 430.268,471.899 482.699,166.553 382.552,206.01 417.928,0 316.146,40.092 "
+				  id="polygon2"
+				  style="fill:#000000" />
+      </g>
+		<text
+				xml:space="preserve"
+				transform="matrix(0.64,0,0,0.64,3.5210625,-20.860967)"
+				id="text2"
+				style="font-weight:bold;font-size:192px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect2);display:inline;fill:#000000">
+        <tspan
+				x="2.8046875"
+				y="457.88939"
+				id="tspan1">MU</tspan></text>
+		<text
+				xml:space="preserve"
+				style="font-weight:bold;font-size:122.88px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke-width:0.64"
+				x="421.63757"
+				y="266.25769"
+				id="text4">
+        <tspan
+				sodipodi:role="line"
+				id="tspan4"
+				style="stroke-width:0.64;fill:#000000"
+				x="421.63757"
+				y="266.25769">K</tspan></text>
+		<text
+				xml:space="preserve"
+				style="font-weight:bold;font-size:40.96px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke-width:0.64"
+				x="156.25662"
+				y="385.0867"
+				id="text5">
+        <tspan
+				sodipodi:role="line"
+				id="tspan5"
+				style="font-size:40.96px;fill:#000000;fill-opacity:1;stroke-width:0.64"
+				x="156.25662"
+				y="385.0867">By Legezin</tspan></text>
+		<g
+				id="g1"
+				transform="matrix(0.03966663,0,0,0.03966663,485.71142,145.46057)"
+				style="fill:#000000">
+        <path
+				class="st0"
+				d="M 256,0 C 114.605,0.015 0.015,114.594 0,256 0.015,397.391 114.605,511.985 256,512 397.395,511.985 511.985,397.391 512,256 511.985,114.594 397.395,0.015 256,0 Z m 155.099,100.904 c 12.12,12.126 22.795,25.66 31.824,40.315 H 402.788 322.27 L 282.011,71.496 261.984,36.807 c 58.236,1.571 110.682,25.689 149.115,64.097 z M 180.86,340.745 h -71.642 l 35.823,-62.047 z m -71.641,-169.49 h 71.642 l -35.818,62.047 z M 158.148,256 207.077,171.255 h 97.859 L 353.859,256 304.937,340.745 h -97.859 z m 208.825,22.698 35.815,62.047 H 331.146 Z M 331.146,171.255 h 71.642 l -35.815,62.047 z M 291.819,148.55 H 220.181 L 256,86.503 Z M 100.9,100.904 C 139.334,62.496 191.778,38.378 250.014,36.807 l -20.026,34.689 -40.244,69.723 H 109.218 69.076 C 78.106,126.564 88.78,113.03 100.9,100.904 Z M 36.657,256 c 0.008,-37.899 9.58,-73.471 26.456,-104.54 L 83.207,186.262 123.467,256 83.208,325.723 63.114,360.524 C 46.236,329.463 36.664,293.891 36.657,256 Z M 100.9,411.096 C 88.78,398.97 78.098,385.429 69.076,370.766 h 40.143 80.526 l 40.244,69.738 20.026,34.689 C 191.786,473.622 139.334,449.504 100.9,411.096 Z m 119.281,-47.662 h 71.638 L 256,425.482 Z m 190.918,47.662 c -38.434,38.408 -90.886,62.526 -149.115,64.097 l 20.027,-34.689 40.259,-69.738 h 80.518 40.135 c -9.021,14.663 -19.704,28.204 -31.824,40.33 z M 428.796,325.723 388.541,256 l 40.255,-69.738 20.09,-34.794 c 16.878,31.061 26.45,66.641 26.458,104.532 -0.008,37.884 -9.58,73.456 -26.458,104.517 z"
+				id="path1"
+				style="fill:#000000" />
+      </g>
+    </g>
+  </g>
+</svg>
