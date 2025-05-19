@@ -1,4 +1,5 @@
-import { ip, port } from '../assets/config.js';
+const ip = "79.136.132.195";
+const port = "5000";
 const API_BASE = `http://${ip}:${port}/api/account`;
 
 
@@ -10,7 +11,7 @@ export async function login(login, password) {
         },
         body: JSON.stringify({ login, password  }),
     });
-
+    console.log(ip);
     if (!res.ok) {
         throw new Error(res.status === 401 ? 'Неверный логин или пароль' : 'Ошибка входа');
     }
