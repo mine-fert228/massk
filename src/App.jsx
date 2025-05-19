@@ -25,7 +25,7 @@ export default function App() {
                     <Route path="/video/:id" element={<SingleVideoPage />} />
                     <Route path="/feed" element={<Feed />} />
                     <Route path="/post/:id" element={<SinglePostPage />} />
-                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/massk/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/profile/:id" element={<Profile />} />
                     <Route path="/logout" element={<Logout />} />

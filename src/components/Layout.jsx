@@ -133,7 +133,7 @@ export function Layout() {
                     )}
                     <Box sx={{ flexGrow: 1 }}>
                         <img
-                            src="/main-logo.svg"
+                            src="https://cdn.jsdelivr.net/gh/pupsikdhd/ProjectCDN/main-logo-white.svg"
                             alt="Логотип"
                             style={{ height: 60 }}
                         />
