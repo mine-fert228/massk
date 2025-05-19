@@ -18,7 +18,7 @@ export default function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Layout />}>
+                <Route path="/massk" element={<Layout />}>
                     <Route index element={<Home />} />
                     <Route path="chat" element={<Chat />}/>
                     <Route path="video" element={<Video />} />
