@@ -20,17 +20,17 @@ export default function App() {
             <Routes>
                 <Route path="/massk" element={<Layout />}>
                     <Route index element={<Home />} />
-                    <Route path="chat" element={<Chat />}/>
-                    <Route path="video" element={<Video />} />
-                    <Route path="/video/:id" element={<SingleVideoPage />} />
-                    <Route path="/feed" element={<Feed />} />
-                    <Route path="/post/:id" element={<SinglePostPage />} />
+                    <Route path="/massk/chat" element={<Chat />}/>
+                    <Route path="/massk/video" element={<Video />} />
+                    <Route path="/massk/video/:id" element={<SingleVideoPage />} />
+                    <Route path="/massk/feed" element={<Feed />} />
+                    <Route path="/massk/post/:id" element={<SinglePostPage />} />
                     <Route path="/massk/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/profile/:id" element={<Profile />} />
-                    <Route path="/logout" element={<Logout />} />
-                    <Route path="/friends" element={<FriendManager />} />
-                    <Route path="/license" element={<LicensePage />} />
+                    <Route path="/massk/register" element={<RegisterPage />} />
+                    <Route path="/massk/profile/:id" element={<Profile />} />
+                    <Route path="/massk/logout" element={<Logout />} />
+                    <Route path="/massk/friends" element={<FriendManager />} />
+                    <Route path="/massk/license" element={<LicensePage />} />
                 </Route>
             </Routes>
         </BrowserRouter>
