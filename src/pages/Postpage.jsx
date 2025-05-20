@@ -21,10 +21,39 @@ import {
 } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { ToastContainer, toast } from 'react-toastify';
+function ToastWithButtons({ resolve }) {
+    const handleOk = () => {
+        toast.dismiss();
+        resolve(true); // ответ: ОК
+    };
 
+    const handleCancel = () => {
+        toast.dismiss();
+        resolve(false); // ответ: Отмена
+    };
+
+    return (
+        <div>
+            <p>Ты уверен?</p>
+            <button onClick={handleOk} style={{ marginRight: 8 }}>ОК</button>
+            <button onClick={handleCancel}>Отмена</button>
+        </div>
+    );
+}
 export default function PostPage() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const formatDate = (isoString) => {
+        const date = new Date(isoString);
+        return date.toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
 
     const [post, setPost] = useState(null);
     const [likes, setLikes] = useState(0);
@@ -108,9 +137,19 @@ export default function PostPage() {
             console.error('Ошибка при лайке:', error);
         }
     };
-
+    const showConfirmToast = () => {
+        return new Promise((resolve) => {
+            toast.info(<ToastWithButtons resolve={resolve} />, {
+                autoClose: false,
+                closeButton: false,
+                draggable: false,
+            });
+        });
+    };
     const handleDelete = async () => {
-        if (!window.confirm("Удалить пост?")) return;
+
+        const result = await showConfirmToast();
+        if(!result){ return;}
 
         try {
             await fetch(`http://${ip}:${port}/api/posts/${id}`, {
@@ -180,7 +219,8 @@ export default function PostPage() {
 
     // Новый обработчик удаления комментария
     const handleDeleteComment = async (commentId) => {
-        if (!window.confirm("Удалить комментарий?")) return;
+        const result = await showConfirmToast();
+        if(!result){ return;}
 
         try {
             const res = await fetch(`http://${ip}:${port}/api/posts/comment/${commentId}`, {
@@ -207,6 +247,19 @@ export default function PostPage() {
 
     return (
         <Box sx={{ maxWidth: 800, mx: 'auto', p: 2, fontFamily: 'Roboto, sans-serif' }}>
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+
+            />
             <Card variant="outlined" sx={{ mb: 4 }}>
                 <CardHeader
                     title={
@@ -221,15 +274,22 @@ export default function PostPage() {
                             <Typography variant="h5">{post.title}</Typography>
                         )
                     }
+
                     subheader={
-                        post.author.id ? (
-                            <Link component={RouterLink} to={`/profile/${post.author.id}`} underline="hover" color="primary">
-                                Автор: {post.author.username}
-                            </Link>
-                        ) : (
-                            'Автор: Неизвестный'
-                        )
+                        <>
+                            {post.author.id ? (
+                                <Link component={RouterLink} to={`/profile/${post.author.id}`} underline="hover" color="primary">
+                                    Автор: {post.author.username}
+                                </Link>
+                            ) : (
+                                'Автор: Неизвестный'
+                            )}
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                {formatDate(post.createdAt)}
+                            </Typography>
+                        </>
                     }
+
                     action={
                         isAuthor && (
                             <>
@@ -286,9 +346,29 @@ export default function PostPage() {
             </Card>
 
             <Divider />
+            <Typography variant="h6" gutterBottom>Комментарии</Typography>
+            <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
 
+                <TextField
+                    label="Новый комментарий"
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleAddComment();
+                        }
+                    }}
+                />
+                <Button variant="contained" onClick={handleAddComment}>
+                    Отправить
+                </Button>
+            </Box>
             <Box sx={{ mt: 4 }}>
-                <Typography variant="h6" gutterBottom>Комментарии</Typography>
+
 
                 {comments.length === 0 ? (
                     <Typography variant="body2" color="text.secondary" align="center">
@@ -320,41 +400,46 @@ export default function PostPage() {
                                 </ListItemAvatar>
                                 <ListItemText
                                     primary={
-                                        <Link
-                                            component={RouterLink}
-                                            to={`/profile/${comment.author.id}`}
-                                            underline="hover"
-                                            color="primary"
-                                        >
-                                            {comment.author.username}
-                                        </Link>
+                                        <Box>
+                                            <Link
+                                                component={RouterLink}
+                                                to={`/profile/${comment.author.id}`}
+                                                underline="hover"
+                                                color="primary"
+                                                sx={{ mr: 1 }}
+                                            >
+                                                {comment.author.username}
+                                            </Link>
+                                            <Typography
+                                                component="span"
+                                                variant="caption"
+                                                color="text.secondary"
+                                                sx={{ ml: 1 }}
+                                            >
+                                                {formatDate(comment.createdAt)}
+                                            </Typography>
+                                            {comment.author.id === post.author.id && (
+                                                <Typography
+                                                    component="span"
+                                                    variant="caption"
+                                                    color="secondary"
+                                                    sx={{ fontWeight: 'bold', ml: 1 }}
+                                                >
+                                                    (автор)
+                                                </Typography>
+                                            )}
+                                        </Box>
                                     }
+
                                     secondary={comment.content}
                                 />
+
                             </ListItem>
                         ))}
                     </List>
                 )}
 
-                <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                    <TextField
-                        label="Новый комментарий"
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                handleAddComment();
-                            }
-                        }}
-                    />
-                    <Button variant="contained" onClick={handleAddComment}>
-                        Отправить
-                    </Button>
-                </Box>
+
             </Box>
         </Box>
     );

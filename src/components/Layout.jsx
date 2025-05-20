@@ -1,14 +1,32 @@
 import {
-    AppBar, Toolbar, Typography, Box, CssBaseline,
-    Drawer, List, ListItem, ListItemText, ListItemAvatar,
-    Avatar, Button, IconButton, useTheme, useMediaQuery, Divider
+    AppBar,
+    Toolbar,
+    Typography,
+    Box,
+    CssBaseline,
+    Drawer,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemAvatar,
+    Avatar,
+    Button,
+    IconButton,
+    useTheme,
+    useMediaQuery,
+    Divider,
+    TextField,
+    InputAdornment,
 } from "@mui/material";
-import CircleIcon from '@mui/icons-material/Circle';
-import MenuIcon from '@mui/icons-material/Menu';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
+import CircleIcon from "@mui/icons-material/Circle";
+import MenuIcon from "@mui/icons-material/Menu";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SearchIcon from "@mui/icons-material/Search";
+
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { validateSession, getMyId } from '../api/auth';
+import { validateSession, getMyId } from "../api/auth";
 import { fetchContacts } from "../api/contact.js";
 
 const drawerWidth = 240;
@@ -18,13 +36,22 @@ export function Layout() {
     const [loading, setLoading] = useState(true);
     const [myId, setMyId] = useState(null);
 
+    const [selected, setSelected] = useState(null);
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const [searchInput, setSearchInput] = useState("");
+
+    const navigate = useNavigate();
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
     useEffect(() => {
         fetchContacts()
-            .then(data => {
+            .then((data) => {
                 setContacts(data);
                 setLoading(false);
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error(err);
                 setLoading(false);
             });
@@ -40,13 +67,6 @@ export function Layout() {
             }
         })();
     }, []);
-
-    const [selected, setSelected] = useState(null);
-    const [mobileOpen, setMobileOpen] = useState(false);
-    const navigate = useNavigate();
-
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const handleNav = (path) => {
         navigate(path);
@@ -69,21 +89,37 @@ export function Layout() {
             {isMobile && (
                 <Box sx={{ p: 1 }}>
                     <Divider sx={{ my: 1 }} />
-                    <Button fullWidth onClick={() => handleNav("/")}>Главная</Button>
-                    <Button fullWidth onClick={() => handleNav("/friends")}>Друзья</Button>
-                    <Button fullWidth onClick={() => handleNav("/chat")}>Чаты</Button>
-                    <Button fullWidth onClick={() => handleNav("/feed")}>Лента</Button>
-                    <Button fullWidth onClick={() => handleNav("/video")}>Видео</Button>
-                    <Button fullWidth onClick={() => handleNav("/logout")}>Выйти</Button>
+                    <Button fullWidth onClick={() => handleNav("/")}>
+                        Главная
+                    </Button>
+                    <Button fullWidth onClick={() => handleNav("/friends")}>
+                        Друзья
+                    </Button>
+                    <Button fullWidth onClick={() => handleNav("/chat")}>
+                        Чаты
+                    </Button>
+                    <Button fullWidth onClick={() => handleNav("/feed")}>
+                        Лента
+                    </Button>
+                    <Button fullWidth onClick={() => handleNav("/video")}>
+                        Видео
+                    </Button>
+                    <Button fullWidth onClick={() => handleNav("/logout")}>
+                        Выйти
+                    </Button>
                     <Divider sx={{ my: 1 }} />
                 </Box>
             )}
 
             <List>
                 {loading ? (
-                    <ListItem><ListItemText primary="Загрузка..." /></ListItem>
+                    <ListItem>
+                        <ListItemText primary="Загрузка..." />
+                    </ListItem>
                 ) : contacts.length === 0 ? (
-                    <ListItem><ListItemText primary="Нет друзей" /></ListItem>
+                    <ListItem>
+                        <ListItemText primary="Нет друзей" />
+                    </ListItem>
                 ) : (
                     contacts.map((user) => (
                         <ListItem
@@ -123,19 +159,39 @@ export function Layout() {
             <AppBar position="fixed" sx={{ backgroundColor: "#d3d3d3" }}>
                 <Toolbar>
                     {isMobile && (
-                        <IconButton
-                            color="inherit"
-                            edge="start"
-                            onClick={() => setMobileOpen(prev => !prev)}
-                        >
+                        <IconButton color="inherit" edge="start" onClick={() => setMobileOpen((prev) => !prev)}>
                             {mobileOpen ? <ArrowBackIcon /> : <MenuIcon />}
                         </IconButton>
                     )}
-                    <Box sx={{ flexGrow: 1 }}>
+
+                    <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
                         <img
                             src="https://cdn.jsdelivr.net/gh/pupsikdhd/ProjectCDN/main-logo-white.svg"
                             alt="Логотип"
-                            style={{ height: 60 }}
+                            style={{ height: 60, cursor: "pointer" }}
+                            onClick={() => navigate("/")}
+                        />
+
+                        {/* Поле поиска */}
+                        <TextField
+                            size="small"
+                            placeholder="Поиск..."
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && searchInput.trim()) {
+                                    navigate(`/search?query=${encodeURIComponent(searchInput.trim())}`);
+                                    setSearchInput("");
+                                }
+                            }}
+                            sx={{ bgcolor: "white", borderRadius: 1, ml: 2, width: 250 }}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
                     </Box>
 
@@ -169,7 +225,6 @@ export function Layout() {
                             <Button onClick={() => handleNav("/logout")}>Выйти</Button>
                         </>
                     )}
-
                 </Toolbar>
             </AppBar>
 
@@ -221,7 +276,7 @@ export function Layout() {
                     width: { sm: `calc(100% - ${drawerWidth}px)` },
                     mt: "64px",
                     overflow: "auto",
-                    bgcolor: "#d9d9d9"
+                    bgcolor: "#d9d9d9",
                 }}
             >
                 <Outlet />

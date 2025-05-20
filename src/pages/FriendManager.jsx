@@ -1,9 +1,6 @@
-// src/pages/FriendManager.jsx
 import { useEffect, useState } from "react";
 import { ip, port } from "/src/assets/config.js";
-import { Link } from "react-router-dom";
 import { useAuthGuard } from "../components/LoginValid.jsx";
-
 import {
     Container,
     Typography,
@@ -12,8 +9,10 @@ import {
     Button,
     Paper,
     Divider,
+    Avatar,
 } from "@mui/material";
 
+import { useNavigate } from "react-router-dom";
 
 const API_BASE = `http://${ip}:${port}`;
 const Token = localStorage.getItem("token");
@@ -24,6 +23,8 @@ export default function FriendManager() {
     const [outgoing, setOutgoing] = useState([]);
     const [friends, setFriends] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -78,6 +79,11 @@ export default function FriendManager() {
         window.location.reload();
     };
 
+    // Навигация по кнопке
+    const goToProfile = (id) => {
+        navigate(`/profile/${id}`);
+    };
+
     if (loading)
         return (
             <Box display="flex" justifyContent="center" mt={10}>
@@ -87,8 +93,6 @@ export default function FriendManager() {
 
     return (
         <Container sx={{ mt: 4 }}>
-
-
             <Paper elevation={3} sx={{ p: 2, mb: 3 }}>
                 <Typography variant="h6">Входящие</Typography>
                 <Divider sx={{ my: 1 }} />
@@ -96,14 +100,27 @@ export default function FriendManager() {
                     <Typography>Нет входящих заявок</Typography>
                 ) : (
                     incoming.map((user) => (
-                        <Box key={user.id} display="flex" alignItems="center" gap={2} my={1}>
-                            <Typography
-                                component={Link}
-                                to={`/profile/${user.id}`}
-                                sx={{ textDecoration: "none" }}
+                        <Box
+                            key={user.id}
+                            display="flex"
+                            alignItems="center"
+                            gap={2}
+                            my={1}
+                            flexWrap="wrap"
+                        >
+                            <Button
+                                startIcon={
+                                    <Avatar
+                                        src={user.avatarUrl || ""}
+                                        alt={user.fromUserName || "Аватар"}
+                                        sx={{ width: 32, height: 32 }}
+                                    />
+                                }
+                                onClick={() => goToProfile(user.fromUserId)}
+                                sx={{ textTransform: "none" }}
                             >
                                 {user.fromUserName || "Без имени"}
-                            </Typography>
+                            </Button>
                             <Button
                                 variant="contained"
                                 size="small"
@@ -131,14 +148,27 @@ export default function FriendManager() {
                     <Typography>Нет исходящих заявок</Typography>
                 ) : (
                     outgoing.map((user) => (
-                        <Box key={user.toUserId} my={1}>
-                            <Typography
-                                component={Link}
-                                to={`/profile/${user.toUserId}`}
-                                sx={{ textDecoration: "none" }}
+                        <Box
+                            key={user.toUserId}
+                            display="flex"
+                            alignItems="center"
+                            gap={2}
+                            my={1}
+                            flexWrap="wrap"
+                        >
+                            <Button
+                                startIcon={
+                                    <Avatar
+                                        src={user.avatarUrl || ""}
+                                        alt={user.toUserName || "Аватар"}
+                                        sx={{ width: 32, height: 32 }}
+                                    />
+                                }
+                                onClick={() => goToProfile(user.toUserId)}
+                                sx={{ textTransform: "none" }}
                             >
                                 {user.toUserName || "Без имени"}
-                            </Typography>
+                            </Button>
                         </Box>
                     ))
                 )}
@@ -151,14 +181,27 @@ export default function FriendManager() {
                     <Typography>Нет друзей</Typography>
                 ) : (
                     friends.map((user) => (
-                        <Box key={user.id} display="flex" alignItems="center" gap={2} my={1}>
-                            <Typography
-                                component={Link}
-                                to={`/profile/${user.friendId}`}
-                                sx={{ textDecoration: "none" }}
+                        <Box
+                            key={user.id}
+                            display="flex"
+                            alignItems="center"
+                            gap={2}
+                            my={1}
+                            flexWrap="wrap"
+                        >
+                            <Button
+                                startIcon={
+                                    <Avatar
+                                        src={user.friendProfile?.avatarUrl || ""}
+                                        alt={user.friendProfile?.name || "Аватар"}
+                                        sx={{ width: 32, height: 32 }}
+                                    />
+                                }
+                                onClick={() => goToProfile(user.friendId)}
+                                sx={{ textTransform: "none" }}
                             >
-                                {user.friendProfile.name || "Без имени"}
-                            </Typography>
+                                {user.friendProfile?.name || "Без имени"}
+                            </Button>
                             <Button
                                 variant="outlined"
                                 color="error"
@@ -172,6 +215,5 @@ export default function FriendManager() {
                 )}
             </Paper>
         </Container>
-
     );
 }

@@ -13,6 +13,7 @@ import {
     Backdrop,
     Fade,
 } from "@mui/material";
+import {toast, ToastContainer} from "react-toastify";
 
 const API_BASE = `http://${ip}:${port}`;
 const Token = localStorage.getItem("token");
@@ -67,14 +68,15 @@ export default function Profile() {
             if (!res.ok) throw new Error("Не удалось удалить из друзей");
             window.location.reload();
         } catch (err) {
-            alert("Ошибка: " + err.message);
+
+            toast.error("Ошибка: " + err.message);
         }
     };
 
     const HandleSendFriendRequest = async () => {
-        if (isMe) return alert("Нельзя отправить запрос самому себе.");
-        if (isFriend) return alert("Вы уже друзья.");
-        if (requestSent) return alert("Запрос уже отправлен.");
+        if (isMe) return toast.error("Нельзя отправить запрос самому себе.");
+        if (isFriend) return toast.error("Вы уже друзья.");
+        if (requestSent) return toast.error("Запрос уже отправлен.");
 
         setSendingRequest(true);
         try {
@@ -87,9 +89,9 @@ export default function Profile() {
                 throw new Error(errText || "Ошибка при отправке запроса");
             }
             setRequestSent(true);
-            alert("Запрос в друзья отправлен!");
+            toast.success("Запрос в друзья отправлен!");
         } catch (err) {
-            alert("Ошибка: " + err.message);
+            toast.error("Ошибка: " + err.message);
         } finally {
             setSendingRequest(false);
         }
@@ -167,7 +169,7 @@ export default function Profile() {
             if (!res.ok) throw new Error("Ошибка при обновлении");
 
             const updated = await res.json();
-            alert("Профиль обновлён!");
+            toast.success("Профиль обновлён!");
             setUser((prev) => ({ ...prev, profile: updated }));
             setEditOpen(false);
         } catch (err) {
@@ -183,6 +185,19 @@ export default function Profile() {
 
     return (
         <div style={{ backgroundColor: "#c0b4b4", padding: 20, fontFamily: "sans-serif", borderRadius: 10 }}>
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                stacked
+            />
             {/* Header */}
             <div style={{
                 marginBottom: "15px",

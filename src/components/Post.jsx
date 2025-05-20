@@ -1,28 +1,30 @@
-// src/components/Post.jsx
-import React from 'react';
+import React from "react";
+import { Card, CardContent, Typography, Button, CardActions, Avatar, Box } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import {
-    Card,
-    CardContent,
-    Typography,
-    CardActions,
-    Button,
-} from '@mui/material';
 
-export default function Post({ title, id }) {
+export default function Post({ id, title, author ,excerpt}) {
     return (
-        <Card sx={{ maxWidth: 500, m: '20px auto', borderRadius: 2 }}>
+        <Card sx={{ maxWidth: 600, margin: "20px auto" }}>
             <CardContent>
-                <Typography variant="h6" component="div" gutterBottom>
+                <Box display="flex" alignItems="center" mb={1}>
+                    <Avatar src={author?.avatarUrl || ""} alt={author?.username || "Автор"} sx={{ marginRight: 2 }} />
+                    <Typography variant="subtitle2" color="text.secondary">
+                        {author?.username || "Неизвестный автор"}
+                    </Typography>
+                </Box>
+
+                <Typography variant="h5" component="div" gutterBottom>
                     {title}
+                </Typography>
+                <Typography variant="h5" component="div" gutterBottom>
+                    {excerpt}
                 </Typography>
             </CardContent>
             <CardActions>
                 <Button
+                    size="small"
                     component={RouterLink}
                     to={`/post/${id}`}
-                    size="small"
-                    color="primary"
                 >
                     Читать далее
                 </Button>
