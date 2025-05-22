@@ -89,9 +89,7 @@ export function Layout() {
             {isMobile && (
                 <Box sx={{ p: 1 }}>
                     <Divider sx={{ my: 1 }} />
-                    <Button fullWidth onClick={() => handleNav("/")}>
-                        Главная
-                    </Button>
+
                     <Button fullWidth onClick={() => handleNav("/profile/friends")}>
                         Друзья
                     </Button>

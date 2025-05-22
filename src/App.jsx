@@ -19,7 +19,7 @@ import VideoPage from "./pages/VideoPage.jsx";
 import UploadVideo from "./pages/UploadVideo";
 export default function App() {
     return (
-        <BrowserRouter>
+        <BrowserRouter >
             <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Home />} />
