@@ -60,7 +60,7 @@ export function Layout() {
     useEffect(() => {
         (async () => {
             try {
-                const id = await getMyId();
+                const id = getMyId();
                 setMyId(id);
             } catch (e) {
                 console.error("Failed to get my ID", e);
@@ -92,16 +92,16 @@ export function Layout() {
                     <Button fullWidth onClick={() => handleNav("/")}>
                         Главная
                     </Button>
-                    <Button fullWidth onClick={() => handleNav("/friends")}>
+                    <Button fullWidth onClick={() => handleNav("/profile/friends")}>
                         Друзья
                     </Button>
                     <Button fullWidth onClick={() => handleNav("/chat")}>
                         Чаты
                     </Button>
-                    <Button fullWidth onClick={() => handleNav("/feed")}>
+                    <Button fullWidth onClick={() => handleNav("/post/feed")}>
                         Лента
                     </Button>
-                    <Button fullWidth onClick={() => handleNav("/video")}>
+                    <Button fullWidth onClick={() => handleNav("/video/feed")}>
                         Видео
                     </Button>
                     <Button fullWidth onClick={() => handleNav("/logout")}>
@@ -217,12 +217,12 @@ export function Layout() {
 
                     {!isMobile && (
                         <>
-                            <Button onClick={() => navigate("/")}>Главная</Button>
-                            <Button onClick={() => handleNav("/friends")}>Друзья</Button>
+
+                            <Button onClick={() => navigate("/profile/friends")}>Друзья</Button>
                             <Button onClick={() => navigate("/chat")}>Чаты</Button>
-                            <Button onClick={() => navigate("/feed")}>Лента</Button>
-                            <Button onClick={() => navigate("/video")}>Видео</Button>
-                            <Button onClick={() => handleNav("/logout")}>Выйти</Button>
+                            <Button onClick={() => navigate("/post/feed")}>Посты</Button>
+                            <Button onClick={() => navigate("/video/feed")}>Видео</Button>
+                            <Button onClick={() => navigate("/logout")}>Выйти</Button>
                         </>
                     )}
                 </Toolbar>

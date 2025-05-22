@@ -112,7 +112,7 @@ export default function Profile() {
                 const data = await res.json();
                 setUser(data);
 
-                const myId = await getMyId();
+                const myId = getMyId();
                 setIsMe(id === myId);
 
                 const friendIds = data.friends?.map((f) => f.friendId) || [];

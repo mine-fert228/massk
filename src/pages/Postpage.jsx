@@ -69,8 +69,8 @@ export default function PostPage() {
     useAuthGuard();
 
     useEffect(() => {
-        const loadMyId = async () => {
-            const id = await getMyId();
+        const loadMyId =  () => {
+            const id = getMyId();
             setMyId(id);
         };
         loadMyId();
@@ -99,7 +99,7 @@ export default function PostPage() {
                 setLikes(data.likes ?? 0);
             }
         } catch (error) {
-            console.error('Ошибка загрузки поста:', error);
+            toast.error('Ошибка загрузки поста:', error);
         }
     };
 
@@ -115,7 +115,7 @@ export default function PostPage() {
             const data = await res.json();
             setComments(data);
         } catch (error) {
-            console.error("Ошибка загрузки комментариев:", error);
+            toast.error("Ошибка загрузки комментариев:", error);
         }
     };
 
@@ -134,7 +134,7 @@ export default function PostPage() {
                 body: JSON.stringify({ IsLiked: true }),
             });
         } catch (error) {
-            console.error('Ошибка при лайке:', error);
+            toast.error('Ошибка при лайке:', error);
         }
     };
     const showConfirmToast = () => {
@@ -160,7 +160,7 @@ export default function PostPage() {
             });
             navigate('/');
         } catch (error) {
-            console.error("Ошибка удаления поста:", error);
+            toast.error("Ошибка удаления поста:", error);
         }
     };
 
@@ -190,10 +190,10 @@ export default function PostPage() {
                 setPost(updatedPost);
                 setIsEditing(false);
             } else {
-                console.error('Ошибка при обновлении поста');
+                toast.error('Ошибка при обновлении поста');
             }
         } catch (error) {
-            console.error('Ошибка при сохранении изменений:', error);
+            toast.error('Ошибка при сохранении изменений:', error);
         }
     };
 
@@ -213,7 +213,7 @@ export default function PostPage() {
                 loadComments();
             }
         } catch (err) {
-            console.error("Ошибка при добавлении комментария:", err);
+            toast.error("Ошибка при добавлении комментария:", err);
         }
     };
 
@@ -232,10 +232,10 @@ export default function PostPage() {
             if (res.ok) {
                 loadComments();
             } else {
-                console.error('Ошибка удаления комментария');
+                toast.error('Ошибка удаления комментария');
             }
         } catch (error) {
-            console.error('Ошибка при удалении комментария:', error);
+            toast.error('Ошибка при удалении комментария:', error);
         }
     };
 
@@ -258,7 +258,7 @@ export default function PostPage() {
                 draggable
                 pauseOnHover
                 theme="light"
-
+                stacked
             />
             <Card variant="outlined" sx={{ mb: 4 }}>
                 <CardHeader

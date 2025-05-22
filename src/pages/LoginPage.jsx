@@ -20,7 +20,7 @@ export default function LoginPage() {
     const handleLogin = async () => {
         try {
             await login(loginValue, password);
-            navigate('/feed');
+            navigate('/post/feed');
             window.location.reload();
 
         } catch (e) {

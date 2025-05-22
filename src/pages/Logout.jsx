@@ -7,7 +7,7 @@ export default function Logout() {
 
     useEffect(() => {
         logout().then(() => {
-            navigate('/feed');
+            navigate('/post/feed');
         });
     }, []);
 

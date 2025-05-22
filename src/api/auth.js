@@ -64,36 +64,9 @@ export default async function logout() {
 }
 
 // Получаем ID пользователя по токену из localStorage
-export async function getMyId() {
+export function getMyId() {
+    const rawToken = localStorage.getItem("token");
 
-    const token = localStorage.getItem("token"); // Получаем токен из localStorage
-
-    if (!token) {
-        return "knox";
-    }
-    try{
-        const response = await fetch(`http://${ip}:${port}/api/user/GetMyId`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Token": token // Отправляем токен в заголовке
-            }
-        });
-        const rawId = await response.json();
-        const cleanId = rawId.replace(/^["'()]+|["'()]+$/g, "");
-
-        if (!response.ok) {
-
-            throw new Error("Ошибка при получении ID пользователя");
-        }
-
-
-        // Ответ не является JSON, а просто ID в виде строки
-        return await cleanId; // Получаем строку (ID)
-    }
-    catch{
-
-        return "knox";
-    }
-
+    return rawToken?.split(":")[0] || "knox";
 }
+

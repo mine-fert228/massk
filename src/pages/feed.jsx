@@ -32,7 +32,7 @@ export default function Feed() {
     return (
         <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
             <Box sx={{ mb: 3, textAlign: "right" }}>
-                <Button variant="contained" color="primary" onClick={() => navigate('/createpost')}>
+                <Button variant="contained" color="primary" onClick={() => navigate('/post/upload')}>
                     Создать новый пост
                 </Button>
             </Box>
