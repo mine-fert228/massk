@@ -8,6 +8,7 @@ export default function Logout() {
     useEffect(() => {
         logout().then(() => {
             navigate('/post/feed');
+            window.location.reload();
         });
     }, []);
 

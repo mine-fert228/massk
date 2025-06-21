@@ -1,3 +1,12 @@
+import {useNavigate} from "react-router-dom";
+import {useEffect} from "react";
+
 export default function Home() {
-    return <h1>Добро пожаловать в mu⚡⚡k</h1>;
+    const navigate = useNavigate();
+    useEffect(() => {
+
+        navigate("/post/feed");
+    });
+
+    return <div></div>;
 }

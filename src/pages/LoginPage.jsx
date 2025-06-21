@@ -18,15 +18,20 @@ export default function LoginPage() {
     const navigate = useNavigate();
 
     const handleLogin = async () => {
+        if (!loginValue.trim() || !password.trim()) {
+            setError("Поля логина и пароля обязательны");
+            return;
+        }
+
         try {
             await login(loginValue, password);
             navigate('/post/feed');
             window.location.reload();
-
         } catch (e) {
             setError(e.message);
         }
     };
+
 
     return (
         <Box
@@ -65,7 +70,11 @@ export default function LoginPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 fullWidth
+                onKeyDown={e => {
+                    if (e.key === 'Enter') handleLogin();
+                }}
             />
+
 
             <Button
                 variant="contained"
@@ -73,9 +82,11 @@ export default function LoginPage() {
                 onClick={handleLogin}
                 fullWidth
                 size="large"
+                disabled={!loginValue.trim() || !password.trim()}
             >
                 Войти
             </Button>
+
 
             <Typography textAlign="center">
                 Нет аккаунта?{' '}

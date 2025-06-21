@@ -3,7 +3,7 @@ import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { fetchPost } from '../api/fetchFeed';
 import { ip, port } from '../assets/config.js';
 import { IconButton, TextField, Button } from '@mui/material';
-import { useAuthGuard } from "../components/LoginValid.jsx";
+
 import { getMyId } from "../api/auth.js";
 import {
     Card,
@@ -22,6 +22,7 @@ import {
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ToastContainer, toast } from 'react-toastify';
+import request from "../api/funcapi.js";
 function ToastWithButtons({ resolve }) {
     const handleOk = () => {
         toast.dismiss();
@@ -66,7 +67,7 @@ export default function PostPage() {
     const [editContent, setEditContent] = useState("");
     const [myId, setMyId] = useState(null);
 
-    useAuthGuard();
+
 
     useEffect(() => {
         const loadMyId =  () => {
@@ -88,11 +89,7 @@ export default function PostPage() {
             setEditTitle(fetchedPost.title);
             setEditContent(fetchedPost.content);
 
-            const reactionRes = await fetch(`http://${ip}:${port}/api/posts/${id}/reactions`, {
-                headers: {
-                    Token: localStorage.getItem('token'),
-                },
-            });
+            const reactionRes = await request(`http://${ip}:${port}/api/posts/${id}/reactions`,'GET');
 
             if (reactionRes.ok) {
                 const data = await reactionRes.json();
@@ -105,11 +102,7 @@ export default function PostPage() {
 
     const loadComments = async () => {
         try {
-            const res = await fetch(`http://${ip}:${port}/api/posts/${id}/comments`, {
-                headers: {
-                    Token: localStorage.getItem('token'),
-                },
-            });
+            const res = await request(`http://${ip}:${port}/api/posts/${id}/comments`,'GET');
 
             if (!res.ok) throw new Error('Не удалось загрузить комментарии');
             const data = await res.json();
@@ -125,14 +118,7 @@ export default function PostPage() {
         setHasLiked(true);
 
         try {
-            await fetch(`http://${ip}:${port}/api/posts/${id}/like`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Token: localStorage.getItem('token'),
-                },
-                body: JSON.stringify({ IsLiked: true }),
-            });
+            await request(`http://${ip}:${port}/api/posts/${id}/like`,'POST',JSON.stringify({ IsLiked: true }));
         } catch (error) {
             toast.error('Ошибка при лайке:', error);
         }
@@ -152,12 +138,7 @@ export default function PostPage() {
         if(!result){ return;}
 
         try {
-            await fetch(`http://${ip}:${port}/api/posts/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    Token: localStorage.getItem('token'),
-                },
-            });
+            await request(`http://${ip}:${port}/api/posts/${id}`,'DELETE',);
             navigate('/');
         } catch (error) {
             toast.error("Ошибка удаления поста:", error);
@@ -174,17 +155,7 @@ export default function PostPage() {
 
     const handleSaveEdit = async () => {
         try {
-            const res = await fetch(`http://${ip}:${port}/api/posts/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Token: localStorage.getItem('token'),
-                },
-                body: JSON.stringify({
-                    title: editTitle,
-                    content: editContent,
-                }),
-            });
+            const res = await request(`http://${ip}:${port}/api/posts/${id}`,'PUT',JSON.stringify({title: editTitle,content: editContent,}));
             if (res.ok) {
                 const updatedPost = await res.json();
                 setPost(updatedPost);
@@ -200,14 +171,7 @@ export default function PostPage() {
     const handleAddComment = async () => {
         if (!commentText.trim()) return;
         try {
-            const res = await fetch(`http://${ip}:${port}/api/posts/${id}/comments`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Token: localStorage.getItem('token'),
-                },
-                body: JSON.stringify({ Content: commentText }),
-            });
+            const res = await request(`http://${ip}:${port}/api/posts/${id}/comments`,'POST',JSON.stringify({ Content: commentText }));
             if (res.ok) {
                 setCommentText("");
                 loadComments();
@@ -223,12 +187,7 @@ export default function PostPage() {
         if(!result){ return;}
 
         try {
-            const res = await fetch(`http://${ip}:${port}/api/posts/comment/${commentId}`, {
-                method: 'DELETE',
-                headers: {
-                    Token: localStorage.getItem('token'),
-                },
-            });
+            const res = await request(`http://${ip}:${port}/api/posts/comment/${commentId}`,'DELETE');
             if (res.ok) {
                 loadComments();
             } else {

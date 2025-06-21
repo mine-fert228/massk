@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useAuthGuard } from "../components/LoginValid.jsx";
+
 import { ip, port } from "/src/assets/config.js";
 import { getMyId } from "../api/auth.js";
 
@@ -14,6 +14,7 @@ import {
     Fade,
 } from "@mui/material";
 import {toast, ToastContainer} from "react-toastify";
+import request from "../api/funcapi.js";
 
 const API_BASE = `http://${ip}:${port}`;
 const Token = localStorage.getItem("token");
@@ -56,14 +57,13 @@ export default function Profile() {
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState(null);
 
-    useAuthGuard();
+
 
     const HandleRemoveFriend = async () => {
         try {
-            const res = await fetch(`${API_BASE}/api/friends/unfriend/${id}`, {
-                method: "DELETE",
-                headers: { Token },
-            });
+            const res = await request(`${API_BASE}/api/friends/unfriend/${id}`,"DELETE");
+
+
 
             if (!res.ok) throw new Error("Не удалось удалить из друзей");
             window.location.reload();
@@ -80,10 +80,7 @@ export default function Profile() {
 
         setSendingRequest(true);
         try {
-            const res = await fetch(`${API_BASE}/api/friends/send/${id}`, {
-                method: "POST",
-                headers: { Token },
-            });
+            const res = await request(`${API_BASE}/api/friends/send/${id}`,'POST');
             if (!res.ok) {
                 const errText = await res.text();
                 throw new Error(errText || "Ошибка при отправке запроса");
@@ -103,9 +100,7 @@ export default function Profile() {
                 setLoading(true);
                 setError(null);
 
-                const res = await fetch(`${API_BASE}/api/user/${id}`, {
-                    headers: { Token },
-                });
+                const res = await request(`${API_BASE}/api/user/${id}`,'GET');
 
                 if (!res.ok) throw new Error("Пользователь не найден или нет доступа");
 
@@ -129,9 +124,7 @@ export default function Profile() {
                 if (data.friends && data.friends.length > 0) {
                     const friendsData = await Promise.all(
                         data.friends.map(async (friend) => {
-                            const friendRes = await fetch(`${API_BASE}/api/user/${friend.friendId}`, {
-                                headers: { Token },
-                            });
+                            const friendRes = await request(`${API_BASE}/api/user/${friend.friendId}`,'GET');
                             if (!friendRes.ok) return null;
                             return await friendRes.json();
                         })
@@ -157,14 +150,7 @@ export default function Profile() {
         setSaving(true);
         setFormError(null);
         try {
-            const res = await fetch(`${API_BASE}/api/user/me`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Token,
-                },
-                body: JSON.stringify(editData),
-            });
+            const res = await request(`${API_BASE}/api/user/me`,"POST",JSON.stringify(editData));
 
             if (!res.ok) throw new Error("Ошибка при обновлении");
 

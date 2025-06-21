@@ -21,12 +21,13 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { ip, port } from "../assets/config.js";
 import { getMyId } from "../api/auth.js";
 import { toast, ToastContainer } from "react-toastify";
-import { useAuthGuard } from "../components/LoginValid.jsx";
+import request from "../api/funcapi.js";
+
 
 const server = `http://${ip}:${port}`;
 
 export default function VideoPage() {
-    useAuthGuard();
+
     const { id } = useParams();
     const [video, setVideo] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -73,7 +74,7 @@ export default function VideoPage() {
     useEffect(() => {
         const fetchVideo = async () => {
             try {
-                const res = await fetch(`${server}/api/Video/Info/${id}`);
+                const res = await request(`${server}/api/Video/Info/${id}`,'GET');
                 const data = await res.json();
                 setVideo(data);
             } catch {
@@ -89,14 +90,11 @@ export default function VideoPage() {
     const handleDeleteVideo = () => {
         openConfirm("Ты уверен, что хочешь удалить видео?", async () => {
             try {
-                await fetch(`${server}/api/Video/${id}`, {
-                    method: "DELETE",
-                    headers: { Token: token }
-                });
-                window.location.href = "/";
+                await request(`${server}/api/Video/delete/${id}`, "DELETE",);
+                window.location.href = "/video/feed";
             } catch (err) {
-                console.error("Ошибка удаления:", err);
-                toast.error("Ошибка при удалении видео");
+                toast.error("Ошибка удаления:", err);
+
             }
         });
     };
@@ -112,7 +110,7 @@ export default function VideoPage() {
 
     const handleEditVideo = async () => {
         try {
-            await fetch(`${server}/api/Video/edit/${video.id}`, {
+            const res = await fetch(`${server}/api/Video/edit/${video.id}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -125,7 +123,18 @@ export default function VideoPage() {
                     tags: tags.split(",").map(tag => tag.trim()).filter(Boolean)
                 })
             });
+            if (res.status === 401) {
+                localStorage.setItem('session', false);
+                localStorage.removeItem('token');
 
+
+            }
+            if (res.status === 403) {
+                window.location.replace("/error/403");
+            }
+            if (res.status === 404) {
+                window.location.replace("/error/404");
+            }
             setVideo(prev => ({
                 ...prev,
                 title: editTitle,
@@ -141,7 +150,7 @@ export default function VideoPage() {
     useEffect(() => {
         const fetchReactions = async () => {
             try {
-                const res = await fetch(`${server}/api/Video/reactions?videoId=${id}`);
+                const res = await request(`${server}/api/Video/reactions?videoId=${id}`,'GET');
                 const text = await res.text();
                 const count = parseInt(text, 10);
                 setLikes(isNaN(count) ? 0 : count);
@@ -152,9 +161,7 @@ export default function VideoPage() {
 
         const fetchHasReacted = async () => {
             try {
-                const res = await fetch(`${server}/api/Video/hasreacted?videoId=${id}`, {
-                    headers: { Token: token }
-                });
+                const res = await request(`${server}/api/Video/hasreacted?videoId=${id}`,'GET');
                 const json = await res.json();
                 setHasReacted(json ? "like" : null);
             } catch {
@@ -169,9 +176,7 @@ export default function VideoPage() {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const res = await fetch(`${server}/api/Video/comment/${id}?page=1&pageSize=20`, {
-                    headers: { Token: token }
-                });
+                const res = await request(`${server}/api/Video/comment/${id}?page=1&pageSize=20`,'GET');
                 const json = await res.json();
                 setComments(json);
             } catch {
@@ -185,10 +190,7 @@ export default function VideoPage() {
     const handleDeleteComment = (commentId) => {
         openConfirm("Ты уверен, что хочешь удалить комментарий?", async () => {
             try {
-                await fetch(`${server}/api/Video/comment/${commentId}`, {
-                    method: "DELETE",
-                    headers: { Token: token }
-                });
+                await request(`${server}/api/Video/comment/${commentId}`, "DELETE");
                 setComments(prev => prev.filter(c => c.id !== commentId));
             } catch (err) {
                 console.error("Ошибка удаления комментария:", err);
@@ -200,17 +202,11 @@ export default function VideoPage() {
     const toggleReaction = async () => {
         if (!token) return;
         if (hasReacted === "like") {
-            await fetch(`${server}/api/Video/removereaction?videoId=${id}`, {
-                method: "POST",
-                headers: { Token: token }
-            });
+            await request(`${server}/api/Video/addreaction?videoId=${id}`, "POST");
             setHasReacted(null);
             setLikes(l => l - 1);
         } else {
-            await fetch(`${server}/api/Video/addreaction?videoId=${id}&type=like`, {
-                method: "POST",
-                headers: { Token: token }
-            });
+            await request(`${server}/api/Video/addreaction?videoId=${id}&type=like`,"POST");
             if (hasReacted === "like") setLikes(l => l - 1);
             setLikes(l => l + 1);
             setHasReacted("like");
@@ -221,14 +217,7 @@ export default function VideoPage() {
         if (!newComment.trim()) return;
 
         try {
-            const res = await fetch(`${server}/api/Video/comment/${id}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Token: token
-                },
-                body: JSON.stringify({ text: newComment })
-            });
+            const res = await request(`${server}/api/Video/comment/${id}`,"POST",JSON.stringify({ text: newComment }));
             const added = await res.json();
             setComments(prev => [added, ...prev]);
             setNewComment("");
@@ -403,7 +392,7 @@ export default function VideoPage() {
                         <label>
                             <input
                                 type="checkbox"
-                                checked={isPublic}
+                                checked={!isPublic}
                                 onChange={e => setIsPublic(e.target.checked)}
                                 style={{ marginRight: 8 }}
                             />

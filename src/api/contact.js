@@ -1,13 +1,10 @@
 import { ip, port } from '/src/assets/config.js';
+import request from "./funcapi.js";
 
 export async function fetchContacts() {
     const token = localStorage.getItem("token");
 
-    const friendRes = await fetch(`http://${ip}:${port}/api/friends/list`, {
-        headers: {
-            'Token': `${token}`
-        }
-    });
+    const friendRes = await request(`http://${ip}:${port}/api/friends/list`,'GET');
 
     if (!friendRes.ok) {
         throw new Error("Пользователь не найден или нет доступа");

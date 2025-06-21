@@ -1,4 +1,5 @@
 import { ip, port } from '/src/assets/config.js';
+import request from "./funcapi.js";
 
 const BASE_URL = `http://${ip}:${port}/api/posts`;
 
@@ -12,13 +13,7 @@ export async function fetchFeed(page = 1, pageSize = 10) {
     const token = localStorage.getItem('token');
     console.log("Fetching feed with token:", token, "Page:", page, "Page size:", pageSize);
 
-    const response = await fetch(`${BASE_URL}/feed?page=${page}&pageSize=${pageSize}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Token': token
-        }
-    });
+    const response = await request(`${BASE_URL}/feed?page=${page}&pageSize=${pageSize}`,'GET');
 
     if (!response.ok) {
         throw new Error(`Ошибка при загрузке ленты: ${response.status}`);
@@ -34,7 +29,7 @@ export async function fetchFeed(page = 1, pageSize = 10) {
 
 // Функция для загрузки поста по id
 export async function fetchPost(id) {
-    const response = await fetch(`http://${ip}:${port}/api/posts/${id}`);
+    const response = await request(`http://${ip}:${port}/api/posts/${id}`,'GET');
     if (!response.ok) {
         throw new Error("Не удалось загрузить пост");
     }
@@ -43,27 +38,14 @@ export async function fetchPost(id) {
 
 
 export const deletePost = async (postId) => {
-    const token = localStorage.getItem("sessionToken"); // Получаем токен сессии
-    const response = await fetch(`http://${ip}:${port}/api/posts/${postId}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Token': token, // Передаем токен в заголовке
-        },
-    });
+
+    const response = await request(`http://${ip}:${port}/api/posts/${postId}`,'DELETE',);
     return response.json();
 };
 
 export const updatePost = async (postId, updatedData) => {
-    const token = localStorage.getItem("sessionToken");
-    const response = await fetch(`http://${ip}:${port}/api/posts/${postId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Token': token,
-        },
-        body: JSON.stringify(updatedData),
-    });
+
+    const response = await request(`http://${ip}:${port}/api/posts/${postId}`,'PUT',JSON.stringify(updatedData));
     return response.json();
 };
 

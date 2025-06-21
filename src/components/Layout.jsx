@@ -18,32 +18,60 @@ import {
     TextField,
     InputAdornment,
 } from "@mui/material";
+import { useLocation } from "react-router-dom";
 
 import CircleIcon from "@mui/icons-material/Circle";
 import MenuIcon from "@mui/icons-material/Menu";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import SearchIcon from "@mui/icons-material/Search";
+
 
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { validateSession, getMyId } from "../api/auth";
 import { fetchContacts } from "../api/contact.js";
-
+import {ip,port} from "../assets/config.js";
+import {useAuthGuard} from "./LoginValid.jsx";
+import request from "../api/funcapi.js";
 const drawerWidth = 240;
 
+export async function fetchUserById(id) {
+    const res = await request(`http://${ip}:${port}/api/user/${id}`,'GET');
+
+    if (!res.ok) throw new Error("Не удалось получить данные пользователя");
+    return res.json();
+}
+
 export function Layout() {
+    const location = useLocation();
+        useAuthGuard(location);
+
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [myId, setMyId] = useState(null);
-
+    const [MyProfile,setMyProfile] = useState(null);
     const [selected, setSelected] = useState(null);
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [searchInput, setSearchInput] = useState("");
+
+
 
     const navigate = useNavigate();
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    useEffect(() => {
+        (async () => {
+            try {
+                const id = getMyId();
+                setMyId(id);
+
+                setMyProfile(await fetchUserById(id));
+
+
+            } catch (e) {
+                console.error("Ошибка при получении моего профиля", e);
+            }
+        })();
+    }, []);
 
     useEffect(() => {
         fetchContacts()
@@ -74,7 +102,7 @@ export function Layout() {
     };
 
     const drawerContent = (
-        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" ,}}>
             {isMobile && (
                 <Box sx={{ p: 1, display: "flex", alignItems: "center" }}>
                     <IconButton onClick={() => setMobileOpen(false)} aria-label="Закрыть меню">
@@ -112,15 +140,16 @@ export function Layout() {
             <List>
                 {loading ? (
                     <ListItem>
-                        <ListItemText primary="Загрузка..." />
+                        <ListItemText style={{color:"white"}} primary="Загрузка..." />
                     </ListItem>
                 ) : contacts.length === 0 ? (
                     <ListItem>
-                        <ListItemText primary="Нет друзей" />
+                        <ListItemText style={{color:"white"}} primary="Нет друзей" />
                     </ListItem>
                 ) : (
                     contacts.map((user) => (
                         <ListItem
+                            style={{color:"white"}}
                             button
                             key={user.id}
                             selected={selected === user.id}
@@ -154,7 +183,7 @@ export function Layout() {
         <Box sx={{ display: "flex", height: "100vh", width: "100vw" }}>
             <CssBaseline />
 
-            <AppBar position="fixed" sx={{ backgroundColor: "#d3d3d3" }}>
+            <AppBar position="fixed" sx={{ backgroundColor: "#040108" }}>
                 <Toolbar>
                     {isMobile && (
                         <IconButton color="inherit" edge="start" onClick={() => setMobileOpen((prev) => !prev)}>
@@ -164,54 +193,32 @@ export function Layout() {
 
                     <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
                         <img
-                            src="https://cdn.jsdelivr.net/gh/pupsikdhd/ProjectCDN/main-logo-white.svg"
+                            src="https://cdn.jsdelivr.net/gh/pupsikdhd/ProjectCDN/main-logo.svg"
                             alt="Логотип"
                             style={{ height: 60, cursor: "pointer" }}
                             onClick={() => navigate("/")}
                         />
 
-                        {/* Поле поиска */}
-                        <TextField
-                            size="small"
-                            placeholder="Поиск..."
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter" && searchInput.trim()) {
-                                    navigate(`/search?query=${encodeURIComponent(searchInput.trim())}`);
-                                    setSearchInput("");
-                                }
-                            }}
-                            sx={{ bgcolor: "white", borderRadius: 1, ml: 2, width: 250 }}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
+
+
                     </Box>
 
-                    {valid === true && myId && (
+                    {valid && (
                         <Link to={`/profile/${myId}`}>
-                            <IconButton>
-                                <CircleIcon sx={{ color: "#8bc34a" }} />
+                            <IconButton sx={{ p: 0 }}>
+                                <Avatar
+                                    src={MyProfile?.profile?.avatarUrl || "/default-avatar.png"}
+                                    alt={MyProfile?.profile?.name || "Я"}
+                                    sx={{ width: 40, height: 40 }}
+                                />
                             </IconButton>
                         </Link>
                     )}
 
-                    {valid === false && (
-                        <IconButton onClick={() => navigate("/login")}>
-                            <CircleIcon sx={{ color: "#f44336" }} />
-                        </IconButton>
-                    )}
 
-                    {valid === null && (
-                        <IconButton disabled>
-                            <CircleIcon sx={{ color: "#ccc" }} />
-                        </IconButton>
-                    )}
+
+
+
 
                     {!isMobile && (
                         <>
@@ -227,7 +234,7 @@ export function Layout() {
             </AppBar>
 
             {/* Навигационный Drawer */}
-            <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
+            <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } ,}}>
                 {/* Mobile Drawer */}
                 <Drawer
                     variant="temporary"
@@ -253,10 +260,12 @@ export function Layout() {
                         display: { xs: "none", sm: "block" },
                         "& .MuiDrawer-paper": {
                             width: drawerWidth,
-                            backgroundColor: "#a29797",
+                            backgroundColor: "#242323",
                             top: "64px",
                             height: "calc(100vh - 64px)",
+
                         },
+
                     }}
                     open
                 >

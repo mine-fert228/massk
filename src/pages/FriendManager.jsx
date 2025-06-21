@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ip, port } from "/src/assets/config.js";
-import { useAuthGuard } from "../components/LoginValid.jsx";
+
 import {
     Container,
     Typography,
@@ -13,12 +13,13 @@ import {
 } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
+import request from "../api/funcapi.js";
 
 const API_BASE = `http://${ip}:${port}`;
 const Token = localStorage.getItem("token");
 
 export default function FriendManager() {
-    useAuthGuard();
+
     const [incoming, setIncoming] = useState([]);
     const [outgoing, setOutgoing] = useState([]);
     const [friends, setFriends] = useState([]);
@@ -30,19 +31,13 @@ export default function FriendManager() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const res = await fetch(`${API_BASE}/api/friends/incoming`, {
-                    headers: { Token },
-                });
-                const res2 = await fetch(`${API_BASE}/api/friends/outgoing`, {
-                    headers: { Token },
-                });
+                const res = await request(`${API_BASE}/api/friends/incoming`,'GET');
+                const res2 = await request(`${API_BASE}/api/friends/outgoing`, 'GET');
 
                 setIncoming((await res.json()) || []);
                 setOutgoing((await res2.json()) || []);
 
-                const friendsRes = await fetch(`${API_BASE}/api/friends/list`, {
-                    headers: { Token },
-                });
+                const friendsRes = await request(`${API_BASE}/api/friends/list`,'GET');
                 const friendsData = await friendsRes.json();
                 setFriends(friendsData || []);
             } catch (err) {
@@ -56,26 +51,17 @@ export default function FriendManager() {
     }, []);
 
     const handleAccept = async (id) => {
-        await fetch(`${API_BASE}/api/friends/accept/${id}`, {
-            method: "PATCH",
-            headers: { Token },
-        });
+        await request(`${API_BASE}/api/friends/accept/${id}`,'PATCH');
         window.location.reload();
     };
 
     const handleDecline = async (id) => {
-        await fetch(`${API_BASE}/api/friends/reject/${id}`, {
-            method: "PATCH",
-            headers: { Token },
-        });
+        await request(`${API_BASE}/api/friends/reject/${id}`,"PATCH");
         window.location.reload();
     };
 
     const handleRemove = async (id) => {
-        await fetch(`${API_BASE}/api/friends/unfriend/${id}`, {
-            method: "DELETE",
-            headers: { Token },
-        });
+        await request(`${API_BASE}/api/friends/unfriend/${id}`,"DELETE");
         window.location.reload();
     };
 
@@ -101,7 +87,7 @@ export default function FriendManager() {
                 ) : (
                     incoming.map((user) => (
                         <Box
-                            key={user.id}
+                            key={user.friendProfile.id}
                             display="flex"
                             alignItems="center"
                             gap={2}
@@ -111,20 +97,20 @@ export default function FriendManager() {
                             <Button
                                 startIcon={
                                     <Avatar
-                                        src={user.avatarUrl || ""}
-                                        alt={user.fromUserName || "Аватар"}
+                                        src={user.friendProfile.avatarUrl || ""}
+                                        alt={user.friendProfile.username || "Аватар"}
                                         sx={{ width: 32, height: 32 }}
                                     />
                                 }
-                                onClick={() => goToProfile(user.fromUserId)}
+                                onClick={() => goToProfile(user.friendProfile.id)}
                                 sx={{ textTransform: "none" }}
                             >
-                                {user.fromUserName || "Без имени"}
+                                {user.friendProfile.username || "Без имени"}
                             </Button>
                             <Button
                                 variant="contained"
                                 size="small"
-                                onClick={() => handleAccept(user.requestId)}
+                                onClick={() => handleAccept(user.id)}
                             >
                                 Принять
                             </Button>
@@ -132,7 +118,7 @@ export default function FriendManager() {
                                 variant="outlined"
                                 color="error"
                                 size="small"
-                                onClick={() => handleDecline(user.requestId)}
+                                onClick={() => handleDecline(user.id)}
                             >
                                 Отклонить
                             </Button>
@@ -149,7 +135,7 @@ export default function FriendManager() {
                 ) : (
                     outgoing.map((user) => (
                         <Box
-                            key={user.toUserId}
+                            key={user.friendProfile.id}
                             display="flex"
                             alignItems="center"
                             gap={2}
@@ -159,15 +145,15 @@ export default function FriendManager() {
                             <Button
                                 startIcon={
                                     <Avatar
-                                        src={user.avatarUrl || ""}
-                                        alt={user.toUserName || "Аватар"}
+                                        src={user.friendProfile.avatarUrl || ""}
+                                        alt={user.friendProfile.username || "Аватар"}
                                         sx={{ width: 32, height: 32 }}
                                     />
                                 }
-                                onClick={() => goToProfile(user.toUserId)}
+                                onClick={() => goToProfile(user.friendProfile.id)}
                                 sx={{ textTransform: "none" }}
                             >
-                                {user.toUserName || "Без имени"}
+                                {user.friendProfile.username || "Без имени"}
                             </Button>
                         </Box>
                     ))

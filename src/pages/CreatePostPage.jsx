@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Alert } from '@mui/material';
 import { ip, port } from '../assets/config.js';
-import {useAuthGuard} from "../components/LoginValid.jsx";
+import request from "../api/funcapi.js";
+
 export default function CreatePostPage() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    useAuthGuard();
+
     const handleSubmit = async () => {
         setError(null);
         if (!title.trim() || !content.trim()) {
@@ -18,17 +19,7 @@ export default function CreatePostPage() {
         }
         setLoading(true);
         try {
-            const res = await fetch(`http://${ip}:${port}/api/posts`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Token': localStorage.getItem('token'),
-                },
-                body: JSON.stringify({
-                    Title: title,
-                    Content: content,
-                }),
-            });
+            const res = await request(`http://${ip}:${port}/api/posts`,'POST',JSON.stringify({Title: title,Content: content,}));
             if (res.ok) {
                 const newPost = await res.json();
                 navigate(`/post/${newPost.id}`); // Перенаправляем на созданный пост
@@ -38,7 +29,7 @@ export default function CreatePostPage() {
                 const data = await res.json();
                 setError(data.message || 'Ошибка при создании поста');
             }
-        } catch (e) {
+        } catch{
             setError('Сетевая ошибка, попробуйте позже');
         } finally {
             setLoading(false);

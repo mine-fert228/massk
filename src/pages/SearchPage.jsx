@@ -12,7 +12,8 @@ import {
     Button,
     Alert,
 } from "@mui/material";
-import {useAuthGuard} from "../components/LoginValid.jsx";
+import request from "../api/funcapi.js";
+
 export default function SearchPage() {
     const [searchParams] = useSearchParams();
     const query = searchParams.get("query") || "";
@@ -20,7 +21,7 @@ export default function SearchPage() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    useAuthGuard();
+
     useEffect(() => {
         if (!query.trim()) {
             setPosts([]);
@@ -32,11 +33,7 @@ export default function SearchPage() {
 
         const token = localStorage.getItem("token");
 
-        fetch(`http://${ip}:${port}/api/posts/search?query=${encodeURIComponent(query)}`, {
-            headers: {
-                Token: token || "",
-            },
-        })
+        request(`http://${ip}:${port}/api/posts/search?query=${encodeURIComponent(query)}`,'GET')
             .then((res) => {
                 if (!res.ok) throw new Error("Ошибка запроса");
                 return res.json();

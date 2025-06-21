@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ip, port } from "../assets/config.js";
-import { useAuthGuard } from "../components/LoginValid.jsx";
+
 const server = `http://${ip}:${port}`;
 
 export default function UploadVideo() {
@@ -24,7 +24,7 @@ export default function UploadVideo() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
-    useAuthGuard();
+
     const token = localStorage.getItem("token");
 
     const handleSubmit = async () => {
@@ -49,7 +49,18 @@ export default function UploadVideo() {
                 },
                 body: formData,
             });
+            if (res.status === 401) {
+                localStorage.setItem('session', false);
+                localStorage.removeItem('token');
 
+
+            }
+            if (res.status === 403) {
+                window.location.replace("/error/403");
+            }
+            if (res.status === 404) {
+                window.location.replace("/error/404");
+            }
             if (!res.ok) throw new Error("Ошибка загрузки");
 
             setSuccess(true);
