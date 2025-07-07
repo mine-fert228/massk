@@ -1,7 +1,7 @@
 import { ip, port } from '/src/assets/config.js';
 import request from "./funcapi.js";
 
-const BASE_URL = `http://${ip}:${port}/api/posts`;
+const BASE_URL = `${ip}:${port}/api/posts`;
 
 /**
  * Загружает ленту постов с пагинацией
@@ -29,7 +29,7 @@ export async function fetchFeed(page = 1, pageSize = 10) {
 
 // Функция для загрузки поста по id
 export async function fetchPost(id) {
-    const response = await request(`http://${ip}:${port}/api/posts/${id}`,'GET');
+    const response = await request(`${ip}:${port}/api/posts/${id}`,'GET');
     if (!response.ok) {
         throw new Error("Не удалось загрузить пост");
     }
@@ -39,13 +39,13 @@ export async function fetchPost(id) {
 
 export const deletePost = async (postId) => {
 
-    const response = await request(`http://${ip}:${port}/api/posts/${postId}`,'DELETE',);
+    const response = await request(`${ip}:${port}/api/posts/${postId}`,'DELETE',);
     return response.json();
 };
 
 export const updatePost = async (postId, updatedData) => {
 
-    const response = await request(`http://${ip}:${port}/api/posts/${postId}`,'PUT',JSON.stringify(updatedData));
+    const response = await request(`${ip}:${port}/api/posts/${postId}`,'PUT',JSON.stringify(updatedData));
     return response.json();
 };
 

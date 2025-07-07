@@ -12,7 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { ip, port } from "../assets/config.js";
 
-const server = `http://${ip}:${port}`;
+const server = `${ip}:${port}`;
 
 export default function UploadVideo() {
     const [title, setTitle] = useState("");

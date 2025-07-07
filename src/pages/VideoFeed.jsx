@@ -15,10 +15,12 @@ import { ip, port } from "../assets/config.js";
 import request from "../api/funcapi.js";
 
 
-const server = `http://${ip}:${port}`;
+const server = `${ip}:${port}`;
 
 export default function VideoFeed() {
     const [videos, setVideos] = useState([]);
+    const [inputSearch, setInputSearch] = useState(""); // новое состояние для поля ввода
+
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const page = 1;
@@ -66,9 +68,15 @@ export default function VideoFeed() {
                     label="Поиск"
                     variant="outlined"
                     size="small"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    value={inputSearch}
+                    onChange={(e) => setInputSearch(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            setSearch(inputSearch);
+                        }
+                    }}
                 />
+
                 {token && (
                     <Button variant="contained" onClick={handleUploadClick}>
                         Загрузить видео
@@ -87,11 +95,11 @@ export default function VideoFeed() {
                             <Card onClick={() => navigate(`/video/${video.id}`)} sx={{ cursor: "pointer" }}>
                                 <CardMedia
                                     component="img"
-                                    image={`http://${ip}:${port}/previews/${video.previewName}` || `http://${ip}:${port}/previews/default.gif`}
+                                    image={`${ip}:${port}/previews/${video.previewName}` || `${ip}:${port}/previews/default.gif`}
                                     alt={video.title}
                                     sx={{
-                                        width: 250,
-                                        height: 140,
+                                        width: 350,
+                                        height: 200,
                                         objectFit: "cover",
                                         mx: "auto",
                                         borderRadius: 1

@@ -20,6 +20,8 @@ import UploadVideo from "./pages/UploadVideo";
 import SessionsPage from "./pages/SessionsPage.jsx";
 import Forbidden from "./pages/Forbidden.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import SettingsPage from "./pages/SettingsPage.jsx";
+import Adminpage from "./pages/AdminPage.jsx";
 
 export default function App() {
     return (
@@ -30,6 +32,8 @@ export default function App() {
 
                     <Route path="/error/403" element={<Forbidden />} />
                     <Route path="/error/404" element={<NotFound />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                    <Route path="/admin" element={<Adminpage />} />
 
                     <Route path="/post/feed" element={<Feed />} />
                     <Route path="/post/:id" element={<SinglePostPage />} />

@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { fetchFeed } from "../api/fetchFeed";
-
+import PostSkeleton from "../components/PostSkeleton.jsx";
 import Post from "../components/Post";
 import {
     Button,
     Box,
     TextField,
-    InputAdornment
+    InputAdornment, CircularProgress
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
@@ -47,7 +47,16 @@ export default function Feed() {
     return (
         <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
 
-            <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between", gap: 2 }}>
+            <Box
+                sx={{
+                    mb: 3,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center", // важно для выравнивания
+                    gap: 2,
+                    flexWrap: "wrap", // можно оставить wrap, но с контролем высоты
+                }}
+            >
                 <TextField
                     size="small"
                     placeholder="Поиск..."
@@ -56,7 +65,17 @@ export default function Feed() {
                     onKeyDown={(e) => {
                         if (e.key === "Enter") handleSearch();
                     }}
-                    sx={{ bgcolor: "white", borderRadius: 1, flexGrow: 1 }}
+                    sx={{
+                        bgcolor: "white",
+                        borderRadius: 1,
+                        flexGrow: 1,
+                        minWidth: 0,
+                        maxWidth: "100%",
+                        height: 40, // фиксированная высота
+                        ".MuiInputBase-root": {
+                            height: 40
+                        }
+                    }}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -65,14 +84,20 @@ export default function Feed() {
                         ),
                     }}
                 />
+
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={() => navigate('/post/upload')}
+                    sx={{
+                        height: 40, // фиксированная высота
+                        whiteSpace: "nowrap", // чтобы текст не переносился
+                    }}
                 >
                     Создать новый пост
                 </Button>
             </Box>
+
 
 
 
@@ -94,7 +119,7 @@ export default function Feed() {
                     );
                 })
             ) : (
-                <p>Загружаются посты...</p>
+                [...Array(3)].map((_, i) => <PostSkeleton key={i} />)
             )}
 
             {hasMore && <div style={{ height: 100 }} />}

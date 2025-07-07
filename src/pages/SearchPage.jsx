@@ -33,7 +33,7 @@ export default function SearchPage() {
 
         const token = localStorage.getItem("token");
 
-        request(`http://${ip}:${port}/api/posts/search?query=${encodeURIComponent(query)}`,'GET')
+        request(`${ip}:${port}/api/posts/search?query=${encodeURIComponent(query)}`,'GET')
             .then((res) => {
                 if (!res.ok) throw new Error("Ошибка запроса");
                 return res.json();

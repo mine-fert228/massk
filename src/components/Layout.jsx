@@ -14,10 +14,14 @@ import {
     IconButton,
     useTheme,
     useMediaQuery,
+
     Divider,
     TextField,
     InputAdornment,
 } from "@mui/material";
+
+
+
 import { useLocation } from "react-router-dom";
 
 import CircleIcon from "@mui/icons-material/Circle";
@@ -32,23 +36,31 @@ import { fetchContacts } from "../api/contact.js";
 import {ip,port} from "../assets/config.js";
 import {useAuthGuard} from "./LoginValid.jsx";
 import request from "../api/funcapi.js";
+
 const drawerWidth = 240;
 
 export async function fetchUserById(id) {
-    const res = await request(`http://${ip}:${port}/api/user/${id}`,'GET');
+    const res = await request(`${ip}:${port}/api/user/${id}`,'GET');
 
     if (!res.ok) throw new Error("Не удалось получить данные пользователя");
     return res.json();
 }
 
 export function Layout() {
+    const settingsicon = "/settings.svg";
+    const chaticon = "/chat.svg";
+    const feedicon = "/feed.svg";
+    const exiticon = "/exit.svg";
+    const videoicon = "/video.svg";
+    const friendsicon = "/friends.svg";
+    const defoltsicon = "/anonymous-512.png";
     const location = useLocation();
         useAuthGuard(location);
-
+    const [avatarUrl, setAvatarUrl] = useState(null);
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [myId, setMyId] = useState(null);
-    const [MyProfile,setMyProfile] = useState(null);
+
     const [selected, setSelected] = useState(null);
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -61,10 +73,12 @@ export function Layout() {
     useEffect(() => {
         (async () => {
             try {
+
                 const id = getMyId();
                 setMyId(id);
+                const res = await request(`${ip}:${port}/api/User/avatar/${id}`,'GET')
+                setAvatarUrl(await res.text());
 
-                setMyProfile(await fetchUserById(id));
 
 
             } catch (e) {
@@ -102,10 +116,18 @@ export function Layout() {
     };
 
     const drawerContent = (
-        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" ,}}>
+        <Box
+            sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                backgroundColor: "#121212", // тёмный фон
+                color: "white", // белый текст
+            }}
+        >
             {isMobile && (
                 <Box sx={{ p: 1, display: "flex", alignItems: "center" }}>
-                    <IconButton onClick={() => setMobileOpen(false)} aria-label="Закрыть меню">
+                    <IconButton onClick={() => setMobileOpen(false)} aria-label="Закрыть меню" sx={{ color: "white" }}>
                         <ArrowBackIcon />
                     </IconButton>
                     <Typography variant="h6" sx={{ ml: 1 }}>
@@ -116,40 +138,43 @@ export function Layout() {
 
             {isMobile && (
                 <Box sx={{ p: 1 }}>
-                    <Divider sx={{ my: 1 }} />
+                    <Divider sx={{ my: 1, borderColor: "rgba(255,255,255,0.1)" }} />
 
-                    <Button fullWidth onClick={() => handleNav("/profile/friends")}>
+                    <Button fullWidth onClick={() => handleNav("/profile/friends")} sx={{ color: "white" }}>
                         Друзья
                     </Button>
-                    <Button fullWidth onClick={() => handleNav("/chat")}>
-                        Чаты
-                    </Button>
-                    <Button fullWidth onClick={() => handleNav("/post/feed")}>
+                    {/*
+                        <Button fullWidth onClick={() => handleNav("/chat")} sx={{ color: "white" }}>
+                          Чаты
+                        </Button>
+                    */}
+
+                    <Button fullWidth onClick={() => handleNav("/post/feed")} sx={{ color: "white" }}>
                         Лента
                     </Button>
-                    <Button fullWidth onClick={() => handleNav("/video/feed")}>
+                    <Button fullWidth onClick={() => handleNav("/video/feed")} sx={{ color: "white" }}>
                         Видео
                     </Button>
-                    <Button fullWidth onClick={() => handleNav("/logout")}>
+                    <Button fullWidth onClick={() => handleNav("/logout")} sx={{ color: "white" }}>
                         Выйти
                     </Button>
-                    <Divider sx={{ my: 1 }} />
+
+                    <Divider sx={{ my: 1, borderColor: "rgba(255,255,255,0.1)" }} />
                 </Box>
             )}
 
             <List>
                 {loading ? (
                     <ListItem>
-                        <ListItemText style={{color:"white"}} primary="Загрузка..." />
+                        <ListItemText primary="Загрузка..." />
                     </ListItem>
                 ) : contacts.length === 0 ? (
                     <ListItem>
-                        <ListItemText style={{color:"white"}} primary="Нет друзей" />
+                        <ListItemText primary="Нет друзей" />
                     </ListItem>
                 ) : (
                     contacts.map((user) => (
                         <ListItem
-                            style={{color:"white"}}
                             button
                             key={user.id}
                             selected={selected === user.id}
@@ -157,6 +182,17 @@ export function Layout() {
                                 setSelected(user.id);
                                 navigate(`/profile/${user.id}`);
                                 setMobileOpen(false);
+                            }}
+                            sx={{
+                                bgcolor: selected === user.id ? "rgba(255,255,255,0.08)" : "transparent",
+                                borderRadius: 2,
+                                border: "1px solid rgba(255,255,255,0.2)",
+                                mb: 1,
+                                transition: "background 0.2s",
+                                "&:hover": {
+                                    backgroundColor: "rgba(255,255,255,0.05)"
+                                },
+                                color: "white"
                             }}
                         >
                             <ListItemAvatar>
@@ -168,6 +204,7 @@ export function Layout() {
                 )}
             </List>
         </Box>
+
     );
 
     const [valid, setValid] = useState(null);
@@ -184,7 +221,7 @@ export function Layout() {
             <CssBaseline />
 
             <AppBar position="fixed" sx={{ backgroundColor: "#040108" }}>
-                <Toolbar>
+                <Toolbar >
                     {isMobile && (
                         <IconButton color="inherit" edge="start" onClick={() => setMobileOpen((prev) => !prev)}>
                             {mobileOpen ? <ArrowBackIcon /> : <MenuIcon />}
@@ -203,14 +240,11 @@ export function Layout() {
 
                     </Box>
 
+
                     {valid && (
                         <Link to={`/profile/${myId}`}>
                             <IconButton sx={{ p: 0 }}>
-                                <Avatar
-                                    src={MyProfile?.profile?.avatarUrl || "/default-avatar.png"}
-                                    alt={MyProfile?.profile?.name || "Я"}
-                                    sx={{ width: 40, height: 40 }}
-                                />
+                                <Avatar src={avatarUrl}    sx={{ width: 40, height: 40 }} />
                             </IconButton>
                         </Link>
                     )}
@@ -220,15 +254,55 @@ export function Layout() {
 
 
 
-                    {!isMobile && (
-                        <>
 
-                            <Button onClick={() => navigate("/profile/friends")}>Друзья</Button>
-                            <Button onClick={() => navigate("/chat")}>Чаты</Button>
-                            <Button onClick={() => navigate("/post/feed")}>Посты</Button>
-                            <Button onClick={() => navigate("/video/feed")}>Видео</Button>
-                            <Button onClick={() => navigate("/logout")}>Выйти</Button>
-                        </>
+                    {!isMobile && (
+                        <div>
+                            <Button onClick={() => navigate("/post/feed")}><img
+                                src={feedicon}
+                                alt="посты"
+                                width={30}
+                                height={30}
+                            /></Button>
+                            <Button onClick={() => navigate("/video/feed")}><img
+                                src={videoicon}
+                                alt="видео"
+                                width={30}
+                                height={30}
+                            /></Button>
+                            <Button onClick={() => navigate("/profile/friends")}><img
+                                src={friendsicon}
+                                alt="друзья"
+                                width={30}
+                                height={30}
+                            /></Button>
+                            {/*
+                                <Button onClick={() => navigate("/chat")}>
+                                    <img
+                                        src={chaticon}
+                                        alt="чаты"
+                                        width={30}
+                                        height={30}
+                                    />
+                                </Button>
+                             */}
+
+                            <IconButton onClick={() => navigate("/settings")} >
+                                <img
+                                    src={settingsicon}
+                                    alt="настройки"
+                                    width={30}
+                                    height={30}
+                                />
+                            </IconButton>
+                            <Button onClick={() => navigate("/logout")}><img
+                                src={exiticon}
+                                alt="выйти"
+                                width={30}
+                                height={30}
+                            /></Button>
+
+
+                        </div>
                     )}
                 </Toolbar>
             </AppBar>

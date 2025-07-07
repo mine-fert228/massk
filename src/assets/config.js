@@ -1,3 +1,3 @@
-export const ip = "79.136.132.195";
-export const port = "5000";
+export const ip = "https://mussk.ddns.net";
+export const port = "443";
 

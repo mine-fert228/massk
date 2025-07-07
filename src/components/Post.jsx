@@ -8,9 +8,11 @@ export default function Post({ id, title, author ,excerpt}) {
             <CardContent>
                 <Box display="flex" alignItems="center" mb={1}>
                     <Avatar src={author?.avatarUrl || ""} alt={author?.username || "Автор"} sx={{ marginRight: 2 }} />
+                    <a href={`/profile/${author.id}`}>
                     <Typography variant="subtitle2" color="text.secondary">
                         {author?.username || "Неизвестный автор"}
                     </Typography>
+                    </a>
                 </Box>
 
                 <Typography variant="h5" component="div" gutterBottom>

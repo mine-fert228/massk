@@ -32,7 +32,7 @@ export default function RegisterPage() {
         }
         try {
             await register(loginValue, password);
-            navigate('/feed');
+            navigate('/post/feed');
             window.location.reload();
         } catch (e) {
             setError(e.message);

@@ -19,7 +19,7 @@ export default function CreatePostPage() {
         }
         setLoading(true);
         try {
-            const res = await request(`http://${ip}:${port}/api/posts`,'POST',JSON.stringify({Title: title,Content: content,}));
+            const res = await request(`${ip}:${port}/api/posts`,'POST',JSON.stringify({Title: title,Content: content,}));
             if (res.ok) {
                 const newPost = await res.json();
                 navigate(`/post/${newPost.id}`); // Перенаправляем на созданный пост

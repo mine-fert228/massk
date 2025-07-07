@@ -16,7 +16,7 @@ import {
 import {toast, ToastContainer} from "react-toastify";
 import request from "../api/funcapi.js";
 
-const API_BASE = `http://${ip}:${port}`;
+const API_BASE = `${ip}:${port}`;
 const Token = localStorage.getItem("token");
 
 const style = {

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useParams } from "react-router-dom";
 import {
+    Link,
     Box,
     Typography,
     Avatar,
@@ -24,7 +25,9 @@ import { toast, ToastContainer } from "react-toastify";
 import request from "../api/funcapi.js";
 
 
-const server = `http://${ip}:${port}`;
+const server = `${ip}:${port}`;
+
+
 
 export default function VideoPage() {
 
@@ -39,7 +42,20 @@ export default function VideoPage() {
     const [yourUserId, setYourUserId] = useState(null);
     const token = localStorage.getItem("token");
     const [isPublic, setIsPublic] = useState(false);
-    const [tags, setTags] = useState("");
+    const [editPreviewFile, setEditPreviewFile] = useState(null);
+
+    const videoRef = useRef(null);
+    const [volume, setVolume] = useState(() => {
+        // При загрузке компоненты пытаемся получить громкость из localStorage или ставим 1 (максимум)
+        const savedVolume = localStorage.getItem('video-volume');
+        return savedVolume !== null ? parseFloat(savedVolume) : 1;
+    });
+    if (videoRef.current) {
+
+        videoRef.current.volume = localStorage.getItem('video-volume');
+
+    }
+
 
     // Модалки
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -49,6 +65,7 @@ export default function VideoPage() {
     const [editOpen, setEditOpen] = useState(false);
     const [editTitle, setEditTitle] = useState("");
     const [editDescription, setEditDescription] = useState("");
+
 
 
     const openConfirm = (text, callback) => {
@@ -103,42 +120,45 @@ export default function VideoPage() {
         setEditTitle(video.title);
         setEditDescription(video.description || "");
         setIsPublic(video.isPublic || false); // зависит от твоего API
-        setTags(video.tags?.join(", ") || "");
+
         setEditOpen(true);
     };
 
 
     const handleEditVideo = async () => {
         try {
+            const formData = new FormData();
+            formData.append("Title", editTitle);
+            formData.append("Description", editDescription);
+            formData.append("isPublic", isPublic);
+
+            // Если пользователь выбрал новый файл превью
+            if (editPreviewFile) {
+                formData.append("Preview", editPreviewFile);
+            }
+
             const res = await fetch(`${server}/api/Video/edit/${video.id}`, {
                 method: "PATCH",
                 headers: {
-                    "Content-Type": "application/json",
-                    Token: token
+                    Token: token, // Не указываем Content-Type, браузер сам добавит boundary
                 },
-                body: JSON.stringify({
-                    title: editTitle,
-                    description: editDescription,
-                    isPublic,
-                    tags: tags.split(",").map(tag => tag.trim()).filter(Boolean)
-                })
+                body: formData
             });
+
             if (res.status === 401) {
                 localStorage.setItem('session', false);
                 localStorage.removeItem('token');
-
-
-            }
-            if (res.status === 403) {
+            } else if (res.status === 403) {
                 window.location.replace("/error/403");
-            }
-            if (res.status === 404) {
+            } else if (res.status === 404) {
                 window.location.replace("/error/404");
             }
+
             setVideo(prev => ({
                 ...prev,
                 title: editTitle,
                 description: editDescription,
+                // можно обновить previewUrl, если API это возвращает
             }));
             toast.success("Видео обновлено");
             setEditOpen(false);
@@ -146,6 +166,7 @@ export default function VideoPage() {
             toast.error("Ошибка при обновлении видео");
         }
     };
+
 
     useEffect(() => {
         const fetchReactions = async () => {
@@ -187,6 +208,11 @@ export default function VideoPage() {
         if (token) fetchComments();
     }, [id, token]);
 
+    const handleVolumeChange = (e) => {
+        const newVolume = e.target.volume;
+        setVolume(newVolume);
+        localStorage.setItem('video-volume', newVolume);
+    };
     const handleDeleteComment = (commentId) => {
         openConfirm("Ты уверен, что хочешь удалить комментарий?", async () => {
             try {
@@ -235,6 +261,9 @@ export default function VideoPage() {
                 component="video"
                 src={`${server}/api/Video/file/${video.id}`}
                 controls
+
+                ref={videoRef}
+                onVolumeChange={handleVolumeChange}
                 poster={video.previewUrl}
                 sx={{
                     width: "100%",
@@ -250,38 +279,47 @@ export default function VideoPage() {
 
 
             <Box display="flex" alignItems="center" mb={2} gap={1}>
-                <Avatar src={video.author?.avatarUrl || ""} />
-                <Box>
-                    <Typography variant="subtitle1" fontWeight="medium">
-                        {video.author?.username || "Неизвестный автор"}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                        {new Date(video.createdAt).toLocaleString()}
-                    </Typography>
-                </Box>
-                <Box display="flex" gap={2} mb={2}>
-                    <Button
-                        variant={hasReacted === "like" ? "contained" : "outlined"}
-                        color="error"
-                        startIcon={<FavoriteIcon />}
-                        onClick={toggleReaction}
-                        disabled={!token}
-                        sx={{ minWidth: 100 }}
-                    >
-                        {likes}
-                    </Button>
-                </Box>
 
-                {video.author?.id === yourUserId && (
+                    <Avatar src={video.author?.avatarUrl || ""} />
+                    <Box ml={1}>
+                        <a href={`/profile/${video.author.id}`}>
+                        <Typography variant="body1" fontWeight="medium" textTransform="lowercase">
+                            {video.author?.username || "неизвестный автор"}
+                        </Typography>
+                        </a>
+                        <Typography variant="caption" color="text.secondary">
+                            {new Date(video.createdAt).toLocaleString()}
+                        </Typography>
+                    </Box>
+
+
+
+
+
+
                     <Box display="flex" gap={1} ml="auto">
-                        <Button variant="outlined" color="primary" onClick={openEditModal}>
+                        <Button
+                            variant={hasReacted === "like" ? "contained" : "outlined"}
+                            color="error"
+                            startIcon={<FavoriteIcon />}
+                            onClick={toggleReaction}
+                            disabled={!token}
+                            sx={{ minWidth: 100 }}
+                        >
+                            {likes}
+                        </Button>
+                        {video.author?.id === yourUserId && (
+                            <Box display="flex" gap={1} ml="auto">
+                            <Button variant="outlined" color="primary" onClick={openEditModal}>
                             Редактировать
                         </Button>
                         <Button variant="outlined" color="error" onClick={handleDeleteVideo}>
                             Удалить
                         </Button>
+                            </Box>
+                        )}
                     </Box>
-                )}
+
             </Box>
 
             <Box mb={3}>
@@ -387,16 +425,28 @@ export default function VideoPage() {
                         value={editDescription}
                         onChange={e => setEditDescription(e.target.value)}
                     />
+                    <Box mt={2}>
+                        <Button variant="outlined" component="label">
+                            Загрузить превью
+                            <input
+                                type="file"
+                                hidden
+                                accept="image/*"
+                                onChange={(e) => setEditPreviewFile(e.target.files[0])}
+                            />
+                        </Button>
+                        {editPreviewFile && <Typography variant="caption">{editPreviewFile.name}</Typography>}
+                    </Box>
 
                     <Box mt={2}>
                         <label>
                             <input
                                 type="checkbox"
-                                checked={!isPublic}
+                                checked={isPublic}
                                 onChange={e => setIsPublic(e.target.checked)}
                                 style={{ marginRight: 8 }}
                             />
-                            Доступ по ссылке
+                            Открыть доступ
                         </label>
                     </Box>
                 </DialogContent>
