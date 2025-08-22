@@ -929,9 +929,9 @@ async function leaveGroupCall(){
 }
 
 function renderAdminList(filter=''){
-    if(curUser.role != "admin"){
-        return;
-    }
+    if(curUser.role == "admin"){
+        
+    
   const f = (filter||'').toLowerCase();
   adminUsers.innerHTML = '';
   Object.entries(usersCache).forEach(([uid,u])=>{
@@ -976,9 +976,11 @@ function renderAdminList(filter=''){
     };
     adminUsers.appendChild(row);
   });
+    }
 }
+if(curUser.role == "admin"){
 adminSearch.addEventListener('input',()=>renderAdminList(adminSearch.value));
-
+}
 document.getElementById('openAdminPanel').onclick = () => {
   renderAdminList('');
   if(curUser.role == "admin"){
