@@ -19,6 +19,8 @@ document.addEventListener('keydown', e => {
   if (e.ctrlKey && e.key.toLowerCase() === 'u') e.preventDefault();
 });
 document.addEventListener('contextmenu', e => e.preventDefault());
+
+
 const supabase1 = supabase.createClient('https://cprwecsggnwqnnggnmex.storage.supabase.co/storage/v1/s3', 'f411c1598e55c6d2c1c76ebc660824f4');
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -222,7 +224,7 @@ const profileRoleBadge = $('#profileRoleBadge'); const profileAvatar = $('#profi
 const editUsernameBtn = $('#editUsernameBtn');
 const newPasswordInput = $('#newPasswordInput'); const changePasswordBtn = $('#changePasswordBtn');
 const openAdminPanel = $('#openAdminPanel');
-const adminPanelBtn = document.getElementById('openAdminPanel');
+
 
 const newsModal = $('#newsModal'); const closeNews = $('#closeNews');
 const postForm = $('#postForm'); const postText = $('#postText'); const postImage = $('#postImage'); const postsList = $('#postsList'); const postFormHint = $('#postFormHint');
@@ -973,7 +975,10 @@ adminSearch.addEventListener('input',()=>renderAdminList(adminSearch.value));
 
 document.getElementById('openAdminPanel').onclick = () => {
   renderAdminList('');
-  showModal(adminPanelModal);
+  if(curUser.role == "admin"){
+    showModal(adminPanelModal);
+  }
+  
 };
 
 
@@ -1139,5 +1144,4 @@ async function bootstrap(){
     }
   });
 }
-
 bootstrap();
