@@ -5,6 +5,9 @@ import { getFirestore, collection, query, where, orderBy, onSnapshot, addDoc, se
 import { getStorage, ref as sref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js";
 
 import firebaseConfig from "./db.js"
+while(true){
+debugger;
+}
 document.addEventListener('keydown', e => {
   
   if (e.key === 'F12') e.preventDefault();
@@ -926,6 +929,9 @@ async function leaveGroupCall(){
 }
 
 function renderAdminList(filter=''){
+    if(curUser.role != "admin"){
+        return;
+    }
   const f = (filter||'').toLowerCase();
   adminUsers.innerHTML = '';
   Object.entries(usersCache).forEach(([uid,u])=>{
