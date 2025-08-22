@@ -5,7 +5,20 @@ import { getFirestore, collection, query, where, orderBy, onSnapshot, addDoc, se
 import { getStorage, ref as sref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js";
 
 import firebaseConfig from "./db.js"
-
+document.addEventListener('keydown', e => {
+  
+  if (e.key === 'F12') e.preventDefault();
+  
+ 
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') e.preventDefault();
+  
+  
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'j') e.preventDefault();
+  
+  
+  if (e.ctrlKey && e.key.toLowerCase() === 'u') e.preventDefault();
+});
+document.addEventListener('contextmenu', e => e.preventDefault());
 const supabase1 = supabase.createClient('https://cprwecsggnwqnnggnmex.storage.supabase.co/storage/v1/s3', 'f411c1598e55c6d2c1c76ebc660824f4');
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -1126,4 +1139,5 @@ async function bootstrap(){
     }
   });
 }
+
 bootstrap();
